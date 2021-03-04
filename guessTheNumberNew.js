@@ -64,16 +64,16 @@ dom.playGround.style.visibility="hidden";
 
 function selectLevel() {  
     variables.level = dom.selectLevelTab.value;
-    if (variables.level === "10") {
-        variables.level = variables.level*1;
+    if (variables.level === "Easy") {
+        variables.level = 10;
         methods.displayLevel("Easy");
         methods.generateRandomNumber(1, variables.level);
-    } else if (variables.level === "50") {
-        variables.level = variables.level*1;
+    } else if (variables.level === "Medium") {
+        variables.level = 50;
         methods.displayLevel("Medium");
         methods.generateRandomNumber(1, variables.level);
-    } else if (variables.level === "100") {
-        variables.level = variables.level*1;
+    } else if (variables.level === "Advanced") {
+        variables.level = 100;
         methods.displayLevel("Advanced");
         methods.generateRandomNumber(1, variables.level);
     }
