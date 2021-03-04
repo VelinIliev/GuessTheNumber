@@ -2,7 +2,8 @@ let variables = {
     randomNumber: undefined,
     level: undefined,
     count: 0,
-    userNumber: undefined
+    userNumber: undefined,
+    tries: 0,
 }
 let dom = {
     btnPlay: document.querySelector("#btnPlay"),
@@ -26,8 +27,14 @@ let methods = {
     displayLevel(input){
         dom.selectLevelText.innerHTML = `Playing level: ${input}`;
     },
+    calculateTries(input) {
+        for ( let i = input; i > 1; i = i / 2) {
+            variables.tries++;
+        }
+        // return tries;
+    },
     displayTries() {
-        dom.countTries.innerHTML = `you have ${5-variables.count} tries left from 5`;
+        dom.countTries.innerHTML = `you have ${variables.tries-variables.count} tries left from ${variables.tries}`;
     },
     displayGuessStatus(input) {
         let div = document.createElement("DIV");
@@ -66,14 +73,17 @@ function selectLevel() {
     variables.level = dom.selectLevelTab.value;
     if (variables.level === "Easy") {
         variables.level = 10;
+        methods.calculateTries(variables.level);
         methods.displayLevel("Easy");
         methods.generateRandomNumber(1, variables.level);
     } else if (variables.level === "Medium") {
         variables.level = 50;
+        methods.calculateTries(variables.level);
         methods.displayLevel("Medium");
         methods.generateRandomNumber(1, variables.level);
     } else if (variables.level === "Advanced") {
         variables.level = 100;
+        methods.calculateTries(variables.level);
         methods.displayLevel("Advanced");
         methods.generateRandomNumber(1, variables.level);
     }
