@@ -2,6 +2,7 @@ let dom = {
     btnPlay: document.querySelector("#btnPlay"),
     btnGuess: document.querySelector("#btnGuess"),
     btnReset: document.querySelector("#btnReset"),
+    btnNewGame: document.querySelector("#btnNewGame"),
     playGround: document.querySelector(".playGround"),
     results: document.querySelector(".results"),
     userNumberInput: document.querySelector("#userNumber"),
@@ -9,133 +10,170 @@ let dom = {
     guessTheNumberText: document.querySelector(".guessTheNumberText"),
     selectLevelText: document.querySelector(".selectLevelText"),
     countTries: document.querySelector("#countTries"),
+    endGame: document.querySelector(".endGame"),
+    dipslayLevel: document.querySelector(".dipslayLevel"),
+    firstEnter: document.querySelector(".firstEnter"),
+    endText: document.querySelector(".endText"),
 };
 
-// помощни функции 
 let methods = {
     generateRandomNumber(start, end) {
-        variables.randomNumber = Math.round(Math.random() * ( end - start ) + start );
+        gameVars.randomNumber = Math.round(Math.random() * 
+                                ( end - start ) + start );
     },
-    displayLevel(input){
-        dom.selectLevelText.innerHTML = `Playing level: ${input}`;
+    displayLevel(levelName){
+        dom.selectLevelTab.classList.add('hidden');
+        dom.btnPlay.classList.add('hidden');
+        dom.dipslayLevel.classList.remove('hidden'); 
+        dom.dipslayLevel.innerHTML = `${levelName}`;
     },
-    calculateTries(input) {
-        for ( let i = input; i > 1; i = i / 2) {
-            variables.tries++;
+    calculateTries(range) {
+        for ( let i = range; i > 1; i = i / 2) {
+            gameVars.tries++;
         }
+        // gameVars.tries = Math.ceil(Math.log2(gameVars.maxRange - gameVars.minRange));
     },
     displayTries() {
-        dom.countTries.innerHTML = `you have ${variables.tries-variables.count} tries left from ${variables.tries}`;
+        dom.countTries.innerHTML = 
+        `you have ${gameVars.tries-gameVars.count} tries left from ${gameVars.tries}`;
     },
-    displayGuessStatus(input) {
+    displayGuessStatus(highOrLow) {
         let div = document.createElement("DIV");
         document.querySelector(".results").appendChild(div)
-        div.innerHTML = `${variables.userNumber} - ${input}`;
+        div.innerHTML = `${gameVars.userNumber} - ${highOrLow}`;
     },
     userNumberIsWrong () {        
-        if (variables.userNumber > variables.randomNumber) {
+        if (gameVars.userNumber > gameVars.randomNumber) {
             methods.displayGuessStatus("High");
-        } else if (variables.userNumber < variables.randomNumber){
+        } else if (gameVars.userNumber < gameVars.randomNumber){
             methods.displayGuessStatus("Low");
         }
     },
     displayFinished(status) {
-        dom.playGround.style.display="none";
+        dom.playGround.classList.add('hidden');
+        dom.endGame.classList.remove("hidden");
+        dom.firstEnter.classList.add('hidden');
+        dom.btnNewGame.classList.remove("hidden");
+        
         if (status === "win") {
-            dom.selectLevelText.innerHTML = `You WIN! You guess the number ${variables.randomNumber} from ${variables.count} tries. <BR>`;
+            dom.endText.innerText = 
+            `You WIN! You guess the number ${gameVars.randomNumber} from ${gameVars.count} tries.`;
         } else if (status === "loose") {
-            dom.selectLevelText.innerHTML = `You loose! My number was: ${variables.randomNumber} <BR>`;
+            dom.endText.innerText = 
+            `You loose! My number was: ${gameVars.randomNumber}`;
         }
-        methods.createButton();
+        dom.btnNewGame.focus();
     },
-    createButton() { 
-        let button = document.createElement("BUTTON");
-        let text = document.createTextNode("Start new game");
-        button.appendChild(text);
-        document.querySelector(".selectLevelText").appendChild(button)
-        let newBtnReset = document.querySelector(".selectLevelText>button");
-        newBtnReset.addEventListener('click', gamePlay.reload);
-        newBtnReset.focus();
-    }
 };
-// Global variables
-let variables = {
+let gameVars = {
     randomNumber: undefined,
     level: undefined,
-    count: 0,
+    minRange: undefined,
+    maxRange: undefined,
     userNumber: undefined,
     tries: 0,
+    count: 0,
 };
-
-// вместо if: 
-//  const levelDict {
-//     level1: {
-// range: [1,10],
-// name: "Easy",
-//     level2: [1,50]
-// }
-
-// Event handlers 
+let levelDict = {
+    level1: {
+        minRange: 1,
+        maxRange: 10,
+        name: "Easy",
+    },
+    level2: {
+        minRange: 1,
+        maxRange: 50,
+        name: "Medium",
+    },
+    level3: {
+        minRange: 1,
+        maxRange: 100,
+        name: "Advanced",
+    },
+};
 let gamePlay = {
-    selectLevel() {  
-        variables.level = dom.selectLevelTab.value;
-        if (variables.level === "Easy") {
-            variables.level = 10;
-            methods.calculateTries(variables.level);
-            methods.displayLevel("Easy");
-            methods.generateRandomNumber(1, variables.level);
-        } else if (variables.level === "Medium") {
-            variables.level = 50;
-            methods.calculateTries(variables.level);
-            methods.displayLevel("Medium");
-            methods.generateRandomNumber(1, variables.level);
-        } else if (variables.level === "Advanced") {
-            variables.level = 100;
-            methods.calculateTries(variables.level);
-            methods.displayLevel("Advanced");
-            methods.generateRandomNumber(1, variables.level);
-        }
-        console.log(`generated number: ${variables.randomNumber}`);
-        dom.playGround.style.visibility="visible";
-        dom.guessTheNumberText.innerHTML = `Guess the number I came up with, from 1 to ${variables.level}`;
-        methods.displayTries();
+    initState() {
+        dom.selectLevelTab.classList.remove('hidden');
+        dom.btnPlay.classList.remove('hidden');
+        dom.firstEnter.classList.remove('hidden');
 
+        dom.dipslayLevel.classList.add('hidden'); 
+        dom.results.classList.add('hidden');
+        dom.playGround.classList.add('hidden');
+        dom.endGame.classList.add('hidden'); 
+
+        gameVars.randomNumber = undefined;
+        gameVars.level = undefined; 
+        gameVars.minRange = undefined;
+        gameVars.maxRange = undefined;
+        gameVars.userNumber = undefined;
+        gameVars.tries = 0;
+        gameVars.count = 0;
+
+        while (dom.results.children[1]) {
+            dom.results.removeChild(dom.results.children[1]);
+        }
+        dom.selectLevelTab.focus();
+    },
+    selectLevel() {  
+        gameVars.level = dom.selectLevelTab.value;
+        gameVars.minRange = levelDict[gameVars.level].minRange;
+        gameVars.maxRange = levelDict[gameVars.level].maxRange;
+        gameVars.name = levelDict[gameVars.level].name
+        
+        // console.log(gameVars.minRange, gameVars.maxRange,gameVars.name);
+        
+        methods.calculateTries((gameVars.maxRange-gameVars.minRange));
+        methods.displayLevel(gameVars.name);
+        methods.generateRandomNumber(gameVars.minRange, gameVars.maxRange);
+        methods.calculateTries(gameVars.level);
+        
+        console.log(`generated number: ${gameVars.randomNumber}`);
+        dom.playGround.classList.remove('hidden');
+        dom.guessTheNumberText.innerHTML = 
+        `Guess the number I came up with, from ${gameVars.minRange} to ${gameVars.maxRange}`;
+        methods.displayTries();
+        dom.userNumberInput.focus();
     },
     guessTheNumber() {  
-        variables.userNumber = dom.userNumberInput.value;
-        console.log(`user number: ${variables.userNumber}`);
+        gameVars.userNumber = dom.userNumberInput.value;
+        console.log(`user number: ${gameVars.userNumber}`);
+        gameVars.count = gameVars.count + 1;
+        // console.log(`count: ${gameVars.count}`);
         
-        dom.results.style.visibility="visible";
-        methods.displayTries();
-        if (variables.userNumber < 1 || variables.userNumber > variables.level) {
-            alert (`The number isn't in range 1 - ${variables.level}!`);
+        if (gameVars.userNumber < gameVars.minRange || 
+            gameVars.userNumber > gameVars.maxRange) {
+            alert (`The number isn't in range 1 - ${gameVars.level}!`);
             dom.userNumberInput.value = "";
-            // variables.count = variables.count - 1;
-        } else if ( variables.userNumber != variables.randomNumber) {
+            gameVars.count = gameVars.count - 1;
+            methods.displayTries();
+        } else if ( gameVars.userNumber != gameVars.randomNumber) {
             methods.userNumberIsWrong ();
-            variables.count = variables.count + 1;
-            if (variables.count === variables.tries ){
+            dom.results.classList.remove('hidden');
+            // gameVars.count = gameVars.count + 1;
+            if (gameVars.count === gameVars.tries ){
                 methods.displayFinished("loose");
             }
-        } else if (variables.userNumber == variables.randomNumber) {
-            variables.count = variables.count + 1;
+            methods.displayTries();
+        } else if (gameVars.userNumber == gameVars.randomNumber) {
             methods.displayGuessStatus("WIN!");
             methods.displayFinished("win");
         }
         dom.userNumberInput.value="";
         dom.userNumberInput.focus();
     },
-    reload() {
-        window.location.reload();
-    },
-}
-// da se vkara wyw funkciq
-dom.results.style.visibility="hidden";
-dom.playGround.style.visibility="hidden";
+    
+};
 
-// Event handlers
-dom.selectLevelTab.focus();
+gamePlay.initState();
+
 dom.btnPlay.addEventListener('click', gamePlay.selectLevel);
+dom.selectLevelTab.addEventListener("keypress", function(e) {
+    if (e.key === 'Enter') {
+        gamePlay.selectLevel()
+    }
+});
+
 dom.btnGuess.addEventListener('click',gamePlay.guessTheNumber);
 dom.userNumberInput.addEventListener("keypress", function(e) {
     if (e.key === 'Enter') {
@@ -143,4 +181,6 @@ dom.userNumberInput.addEventListener("keypress", function(e) {
         dom.userNumberInput.value="";
     }
 });
-dom.btnReset.addEventListener('click', gamePlay.reload);
+
+dom.btnReset.addEventListener('click', gamePlay.initState);
+dom.btnNewGame.addEventListener('click', gamePlay.initState);

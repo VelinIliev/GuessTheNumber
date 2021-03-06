@@ -10,14 +10,21 @@
 <body>
     <div class="container">
         <h1>Guess The Number</h1>
-        <div class="selectLevelText">Select Level:
+        <div class="selectLevelText">
+            <div class="firstEnter"> Select Level:
             <select name="selectLevel" id="selectLevel">
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Advanced">Advanced</option>
+                <option value="level1">Easy</option>
+                <option value="level2">Medium</option>
+                <option value="level3">Advanced</option>
             </select>
+            <span class="dipslayLevel"> </span>
             <button id="btnPlay">Play</button>
         </div>
+            <div class="endGame">
+                <div class="endText"></div>
+                <button id="btnNewGame">Start new game</button>
+            </div>
+         </div>
         <div class="playGround">
             <h2 class="guessTheNumberText"> </h2>
             <input type="number" name="userNumber" id="userNumber">
