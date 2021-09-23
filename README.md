@@ -1,4 +1,4 @@
-# Project from frot-end Advanced course
+# Project from front-end Advanced course
 
 Simple game for studying javascript. Fully accessible to play with keyboard.
 
